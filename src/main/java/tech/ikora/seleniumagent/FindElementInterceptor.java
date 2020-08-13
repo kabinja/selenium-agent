@@ -1,7 +1,7 @@
 package tech.ikora.seleniumagent;
 
-import net.bytebuddy.asm.Advice;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
+import net.bytebuddy.implementation.bind.annotation.Origin;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,9 +9,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 
 public class FindElementInterceptor {
-    @Advice.OnMethodEnter
-    public static void intercept(@Advice.Origin("#t #m") String method, @AllArguments Object[] args) {
-        System.out.println(getCommitId());
+    public static void intercept(@Origin String method, @AllArguments Object[] args) {
+        //System.out.println(getCommitId());
         System.out.println(String.format("start > %s ( %s )", method, Arrays.toString(args)));
     }
 

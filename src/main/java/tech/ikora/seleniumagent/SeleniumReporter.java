@@ -11,11 +11,10 @@ public class SeleniumReporter {
         System.out.println("Starting to collect metrics");
 
         new AgentBuilder.Default()
-                .ignore(ElementMatchers.none())
-                .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                .type(ElementMatchers.any())
+                //.ignore(ElementMatchers.none())
+                //.with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
+                .type(ElementMatchers.named("org.openqa.selenium.remote.RemoteWebDriver"))
                 .transform(new LocatorReporterTransformer())
-                //.with(AgentBuilder.Listener.StreamWriting.toSystemOut())
                 .with(AgentBuilder.TypeStrategy.Default.REDEFINE)
                 .installOn(inst);
     }

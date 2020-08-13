@@ -4,6 +4,7 @@ import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.MethodDelegation;
+import net.bytebuddy.implementation.SuperMethodCall;
 import net.bytebuddy.matcher.ElementMatchers;
 import net.bytebuddy.utility.JavaModule;
 
@@ -17,7 +18,7 @@ public class LocatorReporterTransformer implements AgentBuilder.Transformer {
 
         System.out.println(typeDescription.getName());
 
-        return builder.method(ElementMatchers.anyOf("findElements", "findElement"))
-                .intercept(MethodDelegation.to(FindElementInterceptor.class));
+        return builder.method(ElementMatchers.nameStartsWith("findElement"))
+                .intercept(MethodDelegation.to(FindElementInterceptor.class).andThen(SuperMethodCall.INSTANCE));
     }
 }
