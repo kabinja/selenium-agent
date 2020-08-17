@@ -2,10 +2,11 @@ package tech.ikora.seleniumagent;
 
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
-import net.bytebuddy.description.type.TypeDescription;
-import net.bytebuddy.matcher.ElementMatchers;
+import org.openqa.selenium.By;
 
 import java.lang.instrument.Instrumentation;
+
+import static net.bytebuddy.matcher.ElementMatchers.*;
 
 public class SeleniumReporter {
     public static void premain(final String agentArgs,
@@ -14,12 +15,14 @@ public class SeleniumReporter {
 
         new AgentBuilder.Default()
                 .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
-                .type(ElementMatchers.named("org.openqa.selenium.remote.RemoteWebDriver"))
+                .type(named("org.openqa.selenium.remote.RemoteWebDriver"))
                 .transform((builder, type, classLoader, module) -> builder
-                        .method(ElementMatchers.named("findElement")
-                                .and(ElementMatchers.takesArguments(1))
+                        .method(nameStartsWith("findElement")
+                                .and(takesArguments(By.class).or(takesArguments(String.class, String.class)))
+                                .and(isPublic())
                         )
-                        .intercept(Advice.to(FindElementInterceptor.class)))
+                        .intercept(Advice.to(FindElementInterceptor.class))
+                )
                 .installOn(inst);
     }
 }
