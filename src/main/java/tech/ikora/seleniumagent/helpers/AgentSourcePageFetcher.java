@@ -2,7 +2,7 @@ package tech.ikora.seleniumagent.helpers;
 
 import org.openqa.selenium.remote.RemoteWebDriver;
 
-public class SourcePageFetcher {
+public class AgentSourcePageFetcher {
     private final static String js_code;
 
     static {
