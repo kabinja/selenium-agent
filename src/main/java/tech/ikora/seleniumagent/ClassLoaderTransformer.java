@@ -19,11 +19,11 @@ public class ClassLoaderTransformer implements AgentBuilder.Transformer {
     @Override
     public DynamicType.Builder<?> transform(DynamicType.Builder<?> builder, TypeDescription typeDescription, ClassLoader classLoader, JavaModule module) {
         try {
-            ClassInjector.UsingUnsafe.ofPlatformLoader().inject(singletonMap(
+            ClassInjector.UsingUnsafe.ofBootLoader().inject(singletonMap(
                     new TypeDescription.ForLoadedType(targetClass),
                     ClassFileLocator.ForClassLoader.read(targetClass)
             ));
-        } catch (Exception e){
+        } catch (Throwable e){
             System.out.println("Something went terribly wrong: " + e.getMessage());
             e.printStackTrace();
         }

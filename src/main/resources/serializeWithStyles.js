@@ -30,7 +30,7 @@ Element.prototype.getDomWithInlineStyle = (function () {
             return false;
         }
 
-        return node.tagName.toUpperCase() == tagName.toUpperCase();
+        return node.tagName.toUpperCase() === tagName.toUpperCase();
     }
 
     function getDefaultStyleByTagName(tagName) {
