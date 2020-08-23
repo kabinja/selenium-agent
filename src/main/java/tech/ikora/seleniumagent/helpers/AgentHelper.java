@@ -140,11 +140,17 @@ public class AgentHelper {
         return stringBuilder.toString();
     }
 
+    public static void initializeFrame(DataOutputStream out) throws IOException {
+        out.writeChar('f');
+    }
+
     public static void sendMessage(DataOutputStream out, char type, String payload) throws IOException {
         final byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
 
         out.writeChar(type);
         out.writeInt(bytes.length);
         out.write(bytes);
+
+        System.out.println("Data block sent");
     }
 }

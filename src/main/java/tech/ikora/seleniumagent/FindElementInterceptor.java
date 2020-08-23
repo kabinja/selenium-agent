@@ -11,16 +11,19 @@ import java.net.Socket;
 import java.util.Arrays;
 
 public class FindElementInterceptor {
-    @Advice.OnMethodEnter
-    public static void log(@Advice.This RemoteWebDriver driver, @Advice.AllArguments Object[] args) {
+    @Advice.OnMethodExit(onThrowable = RuntimeException.class)
+    public static void log(@Advice.This RemoteWebDriver driver, @Advice.AllArguments Object[] args, @Advice.Thrown Throwable throwable) {
         try (Socket socket = new Socket("localhost", 8085)){
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             final String dom = (String)driver.executeScript(AgentHelper.getJsCode());
+            final String failure = throwable != null ? throwable.getClass().getName() : "none";
 
+            AgentHelper.initializeFrame(out);
             AgentHelper.sendMessage(out, 'u', driver.getCurrentUrl());
             AgentHelper.sendMessage(out, 'a', Arrays.toString(args));
             AgentHelper.sendMessage(out, 'd', dom);
             AgentHelper.sendMessage(out, 's', AgentHelper.getStackTrace());
+            AgentHelper.sendMessage(out, 'f', failure);
 
         } catch (IOException e) {
             System.out.println("Something went terribly wrong: " + e.getMessage());
