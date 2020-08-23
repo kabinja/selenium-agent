@@ -2,6 +2,8 @@ package tech.ikora.seleniumagent.helpers;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 
 public class AgentHelper {
@@ -114,8 +116,30 @@ public class AgentHelper {
                 "return document.body.getDomWithInlineStyle();";
     }
 
-    public static String getJsCode(){
-        return jsCode;
+    public static String getCurrentUrl(Object driver){
+        String url;
+
+        try {
+            Method getCurrentDom = driver.getClass().getMethod("getCurrentUrl");
+            url = (String)getCurrentDom.invoke(driver);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            url = "Failed to load current url";
+        }
+
+        return url;
+    }
+
+    public static String getDom(Object driver){
+        String dom;
+
+        try {
+            Method getCurrentDom = driver.getClass().getMethod("executeScript", String.class, Object[].class);
+            dom = (String)getCurrentDom.invoke(driver, jsCode, new Object[0]);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            dom = "Failed to load dom";
+        }
+
+        return dom;
     }
 
     public static String getStackTrace(){
@@ -140,6 +164,10 @@ public class AgentHelper {
         return stringBuilder.toString();
     }
 
+    public static String getFailure(Throwable throwable){
+        return throwable != null ? throwable.getClass().getName() : "none";
+    }
+
     public static void initializeFrame(DataOutputStream out) throws IOException {
         out.writeChar('f');
     }
@@ -150,7 +178,5 @@ public class AgentHelper {
         out.writeChar(type);
         out.writeInt(bytes.length);
         out.write(bytes);
-
-        System.out.println("Data block sent");
     }
 }
