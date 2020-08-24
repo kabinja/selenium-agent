@@ -5,7 +5,6 @@ import net.bytebuddy.asm.Advice;
 import tech.ikora.seleniumagent.helpers.AgentHelper;
 
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
 
@@ -20,9 +19,11 @@ public class FindElementInterceptor {
             AgentHelper.sendMessage(out, 'a', Arrays.toString(args));
             AgentHelper.sendMessage(out, 'd', AgentHelper.getDom(driver));
             AgentHelper.sendMessage(out, 's', AgentHelper.getStackTrace());
+            AgentHelper.sendMessage(out, 'w', AgentHelper.getWindowWidth(driver));
+            AgentHelper.sendMessage(out, 'h', AgentHelper.getWindowHeight(driver));
             AgentHelper.sendMessage(out, 'f', AgentHelper.getFailure(throwable));
 
-        } catch (IOException e) {
+        } catch (Throwable e) {
             System.out.println("Something went terribly wrong: " + e.getMessage());
         }
     }

@@ -142,6 +142,32 @@ public class AgentHelper {
         return dom;
     }
 
+    public static String getWindowWidth(Object driver){
+        int width;
+
+        try {
+            width = getSize(driver, "getWidth");
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            System.out.println("Failed to get width: " + e.getMessage());
+            width = -1;
+        }
+
+        return String.valueOf(width);
+    }
+
+    public static String getWindowHeight(Object driver){
+        int height;
+
+        try {
+            height = getSize(driver, "getHeight");
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            System.out.println("Failed to get height: " + e.getMessage());
+            height = -1;
+        }
+
+        return String.valueOf(height);
+    }
+
     public static String getStackTrace(){
         StringBuilder stringBuilder = new StringBuilder();
         for(StackTraceElement st: Thread.currentThread().getStackTrace()){
@@ -178,5 +204,17 @@ public class AgentHelper {
         out.writeChar(type);
         out.writeInt(bytes.length);
         out.write(bytes);
+    }
+
+    private static int getSize(Object driver, String getValueName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method manage = driver.getClass().getMethod("manage");
+        Object options = manage.invoke(driver);
+        Method getWindow = options.getClass().getMethod("window");
+        Object window = getWindow.invoke(options);
+        Method getSize = window.getClass().getMethod("getSize");
+        Object dimension = getSize.invoke(window);
+        Method getValue = dimension.getClass().getMethod(getValueName);
+
+        return (int)getValue.invoke(dimension);
     }
 }
