@@ -10,8 +10,8 @@ import java.util.Arrays;
 
 public class FindElementInterceptor {
     @Advice.OnMethodExit(onThrowable = RuntimeException.class)
-    public static void exit(@Advice.This Object driver, @Advice.AllArguments Object[] args, @Advice.Thrown Throwable throwable) {
-        try (Socket socket = new Socket("localhost", 8085)){
+    public static void exit(@Advice.This Object driver, @Advice.AllArguments Object[] args, @Advice.Thrown Throwable throwable, @Port int port) {
+        try (Socket socket = new Socket("localhost", port)){
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 
             AgentHelper.initializeFrame(out);

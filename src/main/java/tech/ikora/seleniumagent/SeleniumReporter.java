@@ -22,7 +22,7 @@ public class SeleniumReporter {
                                 .and(takesArguments(1).or(takesArguments(String.class, String.class)))
                                 .and(isPublic())
                         )
-                        .intercept(Advice.to(FindElementInterceptor.class))
+                        .intercept(Advice.withCustomMapping().bind(Port.class, Integer.parseInt(agentArgs)).to(FindElementInterceptor.class))
                 )
                 .installOn(inst);
     }
