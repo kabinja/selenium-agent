@@ -1,4 +1,4 @@
-Element.prototype.getDomWithInlineStyle = (function () {
+const getCurrentDom = (function () {
     let defaultStylesByTagName = {};
 
     const noStyleTags = {"BASE":true,"HEAD":true,"HTML":true,"META":true,"NOFRAME":true,"NOSCRIPT":true,"PARAM":true,"SCRIPT":true,"STYLE":true,"TITLE":true};
@@ -92,13 +92,14 @@ Element.prototype.getDomWithInlineStyle = (function () {
         return clone;
     }
 
-    return function serializeWithStyles() {
-        if (this.nodeType !== Node.ELEMENT_NODE) {
-            throw new TypeError();
+    return function computeDom() {
+        let node = document.body.parentNode;
+        while(node.parentNode && node.parentNode.nodeType !== 9){
+            node = node.parentNode;
         }
 
-        return deepCloneWithStyles(this).outerHTML;
+        return deepCloneWithStyles(node).outerHTML;
     }
 })();
 
-return document.body.getDomWithInlineStyle();
+return getCurrentDom();

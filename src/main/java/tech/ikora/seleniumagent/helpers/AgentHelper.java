@@ -10,11 +10,11 @@ public class AgentHelper {
     private final static String jsCode;
 
     static {
-        jsCode = "Element.prototype.getDomWithInlineStyle = (function () {\n" +
+        jsCode = "const getCurrentDom = (function () {\n" +
                 "    let defaultStylesByTagName = {};\n" +
                 "\n" +
                 "    const noStyleTags = {\"BASE\":true,\"HEAD\":true,\"HTML\":true,\"META\":true,\"NOFRAME\":true,\"NOSCRIPT\":true,\"PARAM\":true,\"SCRIPT\":true,\"STYLE\":true,\"TITLE\":true};\n" +
-                "    const ignoreTags = new Set(['SCRIPT']);\n" +
+                "    const ignoreTags = new Set(['SCRIPT']);    \n" +
                 "    const tagNames = [\"A\",\"ABBR\",\"ADDRESS\",\"AREA\",\"ARTICLE\",\"ASIDE\",\"AUDIO\",\"B\",\"BASE\",\"BDI\",\"BDO\",\"BLOCKQUOTE\",\"BODY\",\"BR\",\"BUTTON\",\"CANVAS\",\"CAPTION\",\"CENTER\",\"CITE\",\"CODE\",\"COL\",\"COLGROUP\",\"COMMAND\",\"DATALIST\",\"DD\",\"DEL\",\"DETAILS\",\"DFN\",\"DIV\",\"DL\",\"DT\",\"EM\",\"EMBED\",\"FIELDSET\",\"FIGCAPTION\",\"FIGURE\",\"FONT\",\"FOOTER\",\"FORM\",\"H1\",\"H2\",\"H3\",\"H4\",\"H5\",\"H6\",\"HEAD\",\"HEADER\",\"HGROUP\",\"HR\",\"HTML\",\"I\",\"IFRAME\",\"IMG\",\"INPUT\",\"INS\",\"KBD\",\"KEYGEN\",\"LABEL\",\"LEGEND\",\"LI\",\"LINK\",\"MAP\",\"MARK\",\"MATH\",\"MENU\",\"META\",\"METER\",\"NAV\",\"NOBR\",\"NOSCRIPT\",\"OBJECT\",\"OL\",\"OPTION\",\"OPTGROUP\",\"OUTPUT\",\"P\",\"PARAM\",\"PRE\",\"PROGRESS\",\"Q\",\"RP\",\"RT\",\"RUBY\",\"S\",\"SAMP\",\"SCRIPT\",\"SECTION\",\"SELECT\",\"SMALL\",\"SOURCE\",\"SPAN\",\"STRONG\",\"STYLE\",\"SUB\",\"SUMMARY\",\"SUP\",\"SVG\",\"TABLE\",\"TBODY\",\"TD\",\"TEXTAREA\",\"TFOOT\",\"TH\",\"THEAD\",\"TIME\",\"TITLE\",\"TR\",\"TRACK\",\"U\",\"UL\",\"VAR\",\"VIDEO\",\"WBR\"];\n" +
                 "\n" +
                 "    for (let i = 0; i < tagNames.length; i++) {\n" +
@@ -42,7 +42,7 @@ public class AgentHelper {
                 "            return false;\n" +
                 "        }\n" +
                 "\n" +
-                "        return node.tagName.toUpperCase() === tagName.toUpperCase();\n" +
+                "        return node.tagName.toUpperCase() == tagName.toUpperCase();\n" +
                 "    }\n" +
                 "\n" +
                 "    function getDefaultStyleByTagName(tagName) {\n" +
@@ -79,9 +79,9 @@ public class AgentHelper {
                 "        if(hasTagName(node, \"img\")){\n" +
                 "            return computeImageNode(node);\n" +
                 "        }\n" +
-                "\n" +
+                "        \n" +
                 "        const clone = node.cloneNode(false);\n" +
-                "\n" +
+                "        \n" +
                 "        if (isComputeStyle(node)) {\n" +
                 "            const computedStyle = getComputedStyle(node);\n" +
                 "            const defaultStyle = getDefaultStyleByTagName(node.tagName);\n" +
@@ -100,20 +100,21 @@ public class AgentHelper {
                 "                clone.appendChild(deepCloneWithStyles(child));\n" +
                 "            }\n" +
                 "        }\n" +
-                "\n" +
+                "            \n" +
                 "        return clone;\n" +
                 "    }\n" +
                 "\n" +
-                "    return function serializeWithStyles() {\n" +
-                "        if (this.nodeType !== Node.ELEMENT_NODE) {\n" +
-                "            throw new TypeError();\n" +
+                "    return function computeDom() {\n" +
+                "        let node = document.body.parentNode;\n" +
+                "        while(node.parentNode && node.parentNode.nodeType != 9){\n" +
+                "            node = node.parentNode;\n" +
                 "        }\n" +
                 "\n" +
-                "        return deepCloneWithStyles(this).outerHTML;\n" +
+                "        return deepCloneWithStyles(node).outerHTML;\n" +
                 "    }\n" +
                 "})();\n" +
                 "\n" +
-                "return document.body.getDomWithInlineStyle();";
+                "return getCurrentDom();\n";
     }
 
     public static String getCurrentUrl(Object driver){
