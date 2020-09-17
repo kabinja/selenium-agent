@@ -14,7 +14,7 @@ public class AgentHelper {
                 "    let defaultStylesByTagName = {};\n" +
                 "\n" +
                 "    const noStyleTags = {\"BASE\":true,\"HEAD\":true,\"HTML\":true,\"META\":true,\"NOFRAME\":true,\"NOSCRIPT\":true,\"PARAM\":true,\"SCRIPT\":true,\"STYLE\":true,\"TITLE\":true};\n" +
-                "    const ignoreTags = new Set(['SCRIPT', 'STYLE']);\n" +
+                "    const ignoreTags = new Set(['SCRIPT', 'STYLE', 'LINK']);\n" +
                 "    const tagNames = [\"A\",\"ABBR\",\"ADDRESS\",\"AREA\",\"ARTICLE\",\"ASIDE\",\"AUDIO\",\"B\",\"BASE\",\"BDI\",\"BDO\",\"BLOCKQUOTE\",\"BODY\",\"BR\",\"BUTTON\",\"CANVAS\",\"CAPTION\",\"CENTER\",\"CITE\",\"CODE\",\"COL\",\"COLGROUP\",\"COMMAND\",\"DATALIST\",\"DD\",\"DEL\",\"DETAILS\",\"DFN\",\"DIV\",\"DL\",\"DT\",\"EM\",\"EMBED\",\"FIELDSET\",\"FIGCAPTION\",\"FIGURE\",\"FONT\",\"FOOTER\",\"FORM\",\"H1\",\"H2\",\"H3\",\"H4\",\"H5\",\"H6\",\"HEAD\",\"HEADER\",\"HGROUP\",\"HR\",\"HTML\",\"I\",\"IFRAME\",\"IMG\",\"INPUT\",\"INS\",\"KBD\",\"KEYGEN\",\"LABEL\",\"LEGEND\",\"LI\",\"LINK\",\"MAP\",\"MARK\",\"MATH\",\"MENU\",\"META\",\"METER\",\"NAV\",\"NOBR\",\"NOSCRIPT\",\"OBJECT\",\"OL\",\"OPTION\",\"OPTGROUP\",\"OUTPUT\",\"P\",\"PARAM\",\"PRE\",\"PROGRESS\",\"Q\",\"RP\",\"RT\",\"RUBY\",\"S\",\"SAMP\",\"SCRIPT\",\"SECTION\",\"SELECT\",\"SMALL\",\"SOURCE\",\"SPAN\",\"STRONG\",\"STYLE\",\"SUB\",\"SUMMARY\",\"SUP\",\"SVG\",\"TABLE\",\"TBODY\",\"TD\",\"TEXTAREA\",\"TFOOT\",\"TH\",\"THEAD\",\"TIME\",\"TITLE\",\"TR\",\"TRACK\",\"U\",\"UL\",\"VAR\",\"VIDEO\",\"WBR\"];\n" +
                 "\n" +
                 "    for (let i = 0; i < tagNames.length; i++) {\n" +
@@ -112,7 +112,7 @@ public class AgentHelper {
                 "    }\n" +
                 "\n" +
                 "    function updateStyle(node, styles, defaultStyle){\n" +
-                "        if(styles == undefined){\n" +
+                "        if(styles === undefined){\n" +
                 "            return;\n" +
                 "        }\n" +
                 "\n" +
@@ -131,11 +131,7 @@ public class AgentHelper {
                 "    }\n" +
                 "\n" +
                 "    return function computeDom() {\n" +
-                "        let node = document.body.parentNode;\n" +
-                "        while(node.parentNode && node.parentNode.nodeType !== 9){\n" +
-                "            node = node.parentNode;\n" +
-                "        }\n" +
-                "\n" +
+                "        let node = document.documentElement;\n" +
                 "        return deepCloneWithStyles(node).outerHTML;\n" +
                 "    }\n" +
                 "})();\n" +

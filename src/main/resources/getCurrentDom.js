@@ -2,7 +2,7 @@ const getCurrentDom = (function () {
     let defaultStylesByTagName = {};
 
     const noStyleTags = {"BASE":true,"HEAD":true,"HTML":true,"META":true,"NOFRAME":true,"NOSCRIPT":true,"PARAM":true,"SCRIPT":true,"STYLE":true,"TITLE":true};
-    const ignoreTags = new Set(['SCRIPT', 'STYLE']);
+    const ignoreTags = new Set(['SCRIPT', 'STYLE', 'LINK']);
     const tagNames = ["A","ABBR","ADDRESS","AREA","ARTICLE","ASIDE","AUDIO","B","BASE","BDI","BDO","BLOCKQUOTE","BODY","BR","BUTTON","CANVAS","CAPTION","CENTER","CITE","CODE","COL","COLGROUP","COMMAND","DATALIST","DD","DEL","DETAILS","DFN","DIV","DL","DT","EM","EMBED","FIELDSET","FIGCAPTION","FIGURE","FONT","FOOTER","FORM","H1","H2","H3","H4","H5","H6","HEAD","HEADER","HGROUP","HR","HTML","I","IFRAME","IMG","INPUT","INS","KBD","KEYGEN","LABEL","LEGEND","LI","LINK","MAP","MARK","MATH","MENU","META","METER","NAV","NOBR","NOSCRIPT","OBJECT","OL","OPTION","OPTGROUP","OUTPUT","P","PARAM","PRE","PROGRESS","Q","RP","RT","RUBY","S","SAMP","SCRIPT","SECTION","SELECT","SMALL","SOURCE","SPAN","STRONG","STYLE","SUB","SUMMARY","SUP","SVG","TABLE","TBODY","TD","TEXTAREA","TFOOT","TH","THEAD","TIME","TITLE","TR","TRACK","U","UL","VAR","VIDEO","WBR"];
 
     for (let i = 0; i < tagNames.length; i++) {
@@ -100,7 +100,7 @@ const getCurrentDom = (function () {
     }
 
     function updateStyle(node, styles, defaultStyle){
-        if(styles == undefined){
+        if(styles === undefined){
             return;
         }
 
@@ -119,11 +119,7 @@ const getCurrentDom = (function () {
     }
 
     return function computeDom() {
-        let node = document.body.parentNode;
-        while(node.parentNode && node.parentNode.nodeType !== 9){
-            node = node.parentNode;
-        }
-
+        let node = document.documentElement;
         return deepCloneWithStyles(node).outerHTML;
     }
 })();
