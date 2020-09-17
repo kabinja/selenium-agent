@@ -14,7 +14,7 @@ public class AgentHelper {
                 "    let defaultStylesByTagName = {};\n" +
                 "\n" +
                 "    const noStyleTags = {\"BASE\":true,\"HEAD\":true,\"HTML\":true,\"META\":true,\"NOFRAME\":true,\"NOSCRIPT\":true,\"PARAM\":true,\"SCRIPT\":true,\"STYLE\":true,\"TITLE\":true};\n" +
-                "    const ignoreTags = new Set(['SCRIPT']);\n" +
+                "    const ignoreTags = new Set(['SCRIPT', 'STYLE']);\n" +
                 "    const tagNames = [\"A\",\"ABBR\",\"ADDRESS\",\"AREA\",\"ARTICLE\",\"ASIDE\",\"AUDIO\",\"B\",\"BASE\",\"BDI\",\"BDO\",\"BLOCKQUOTE\",\"BODY\",\"BR\",\"BUTTON\",\"CANVAS\",\"CAPTION\",\"CENTER\",\"CITE\",\"CODE\",\"COL\",\"COLGROUP\",\"COMMAND\",\"DATALIST\",\"DD\",\"DEL\",\"DETAILS\",\"DFN\",\"DIV\",\"DL\",\"DT\",\"EM\",\"EMBED\",\"FIELDSET\",\"FIGCAPTION\",\"FIGURE\",\"FONT\",\"FOOTER\",\"FORM\",\"H1\",\"H2\",\"H3\",\"H4\",\"H5\",\"H6\",\"HEAD\",\"HEADER\",\"HGROUP\",\"HR\",\"HTML\",\"I\",\"IFRAME\",\"IMG\",\"INPUT\",\"INS\",\"KBD\",\"KEYGEN\",\"LABEL\",\"LEGEND\",\"LI\",\"LINK\",\"MAP\",\"MARK\",\"MATH\",\"MENU\",\"META\",\"METER\",\"NAV\",\"NOBR\",\"NOSCRIPT\",\"OBJECT\",\"OL\",\"OPTION\",\"OPTGROUP\",\"OUTPUT\",\"P\",\"PARAM\",\"PRE\",\"PROGRESS\",\"Q\",\"RP\",\"RT\",\"RUBY\",\"S\",\"SAMP\",\"SCRIPT\",\"SECTION\",\"SELECT\",\"SMALL\",\"SOURCE\",\"SPAN\",\"STRONG\",\"STYLE\",\"SUB\",\"SUMMARY\",\"SUP\",\"SVG\",\"TABLE\",\"TBODY\",\"TD\",\"TEXTAREA\",\"TFOOT\",\"TH\",\"THEAD\",\"TIME\",\"TITLE\",\"TR\",\"TRACK\",\"U\",\"UL\",\"VAR\",\"VIDEO\",\"WBR\"];\n" +
                 "\n" +
                 "    for (let i = 0; i < tagNames.length; i++) {\n" +
@@ -56,11 +56,23 @@ public class AgentHelper {
                 "    }\n" +
                 "\n" +
                 "    function isIgnored(node){\n" +
-                "        return ignoreTags.has(node.tagName);\n" +
+                "        if(node.tagName == null){\n" +
+                "            return false;\n" +
+                "        }\n" +
+                "\n" +
+                "        return ignoreTags.has(node.tagName.toUpperCase());\n" +
                 "    }\n" +
                 "\n" +
                 "    function isComputeStyle(node){\n" +
-                "        return !noStyleTags[node.tagName] && node instanceof Element;\n" +
+                "        if(node === null){\n" +
+                "            return false;\n" +
+                "        }\n" +
+                "\n" +
+                "        if(node.tagName === null){\n" +
+                "            return false;\n" +
+                "        }\n" +
+                "\n" +
+                "        return node instanceof Element && !noStyleTags[node.tagName.toUpperCase()];\n" +
                 "    }\n" +
                 "\n" +
                 "    function computeImageNode(node){\n" +
@@ -83,19 +95,12 @@ public class AgentHelper {
                 "        const clone = node.cloneNode(false);\n" +
                 "\n" +
                 "        if (isComputeStyle(node)) {\n" +
-                "            const computedStyle = getComputedStyle(node);\n" +
                 "            const defaultStyle = getDefaultStyleByTagName(node.tagName);\n" +
-                "\n" +
-                "            for (let j = 0; j < computedStyle.length; j++) {\n" +
-                "                const cssPropName = computedStyle[j];\n" +
-                "\n" +
-                "                if (computedStyle[cssPropName] !== defaultStyle[cssPropName]) {\n" +
-                "                    clone.style[cssPropName] = computedStyle[cssPropName];\n" +
-                "                }\n" +
-                "            }\n" +
+                "            const computedStyle = getComputedStyle(node);\n" +
+                "            updateStyle(clone, computedStyle, defaultStyle);\n" +
                 "        }\n" +
                 "\n" +
-                "        clone.style = { ...node.style};\n" +
+                "        updateStyle(clone, node.style, {});\n" +
                 "\n" +
                 "        for (let child of node.childNodes){\n" +
                 "            if(!isIgnored(child)){\n" +
@@ -104,6 +109,25 @@ public class AgentHelper {
                 "        }\n" +
                 "\n" +
                 "        return clone;\n" +
+                "    }\n" +
+                "\n" +
+                "    function updateStyle(node, styles, defaultStyle){\n" +
+                "        if(styles == undefined){\n" +
+                "            return;\n" +
+                "        }\n" +
+                "\n" +
+                "        for (let i = 0, l = styles.length; i < l; ++i) {\n" +
+                "            const cssPropName = styles[i];\n" +
+                "\n" +
+                "            if(defaultStyle !== undefined && styles[cssPropName] === defaultStyle[cssPropName]){\n" +
+                "                continue;\n" +
+                "            }\n" +
+                "\n" +
+                "            if (styles[cssPropName] !== \"\"\n" +
+                "                && styles[cssPropName] !== null) {\n" +
+                "                node.style[cssPropName] = styles[cssPropName];\n" +
+                "            }\n" +
+                "        }\n" +
                 "    }\n" +
                 "\n" +
                 "    return function computeDom() {\n" +
