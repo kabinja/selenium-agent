@@ -83,6 +83,8 @@ const getCurrentDom = (function () {
             }
         }
 
+        clone.style = { ...node.style};
+
         for (let child of node.childNodes){
             if(!isIgnored(child)){
                 clone.appendChild(deepCloneWithStyles(child));
