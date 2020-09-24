@@ -44,7 +44,11 @@ const getCurrentDom = (function () {
     }
 
     function isIgnored(node){
-        if(node.tagName == null){
+        if(node === undefined){
+            return true;
+        }
+
+        if(node.tagName === undefined){
             return false;
         }
 
@@ -52,11 +56,7 @@ const getCurrentDom = (function () {
     }
 
     function isComputeStyle(node){
-        if(node === null){
-            return false;
-        }
-
-        if(node.tagName === null){
+        if(node.tagName === undefined){
             return false;
         }
 
@@ -66,10 +66,16 @@ const getCurrentDom = (function () {
     function computeImageNode(node){
         let img = document.createElement("img");
 
-        img.alt = node.alt;
-        img.style.width = node.width;
-        img.style.height = node.height;
-        img.id = node.id;
+        if(node.alt != ""){
+            img.alt = node.alt;
+        }
+
+        if(node.id != ""){
+            img.id = node.id;
+        }
+
+        img.width = node.width;
+        img.height = node.height;
         img.class = node.class;
 
         return img;
@@ -86,6 +92,7 @@ const getCurrentDom = (function () {
             const defaultStyle = getDefaultStyleByTagName(node.tagName);
             const computedStyle = getComputedStyle(node);
             updateStyle(clone, computedStyle, defaultStyle);
+            clone.style.font = node.style.font;
         }
 
         updateStyle(clone, node.style, {});
@@ -111,8 +118,7 @@ const getCurrentDom = (function () {
                 continue;
             }
 
-            if (styles[cssPropName] !== ""
-                && styles[cssPropName] !== null) {
+            if (styles[cssPropName] !== null && styles[cssPropName] !== "") {
                 node.style[cssPropName] = styles[cssPropName];
             }
         }

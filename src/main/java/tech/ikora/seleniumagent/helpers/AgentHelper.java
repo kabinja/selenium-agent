@@ -56,7 +56,11 @@ public class AgentHelper {
                 "    }\n" +
                 "\n" +
                 "    function isIgnored(node){\n" +
-                "        if(node.tagName == null){\n" +
+                "        if(node === undefined){\n" +
+                "            return true;\n" +
+                "        }\n" +
+                "\n" +
+                "        if(node.tagName === undefined){\n" +
                 "            return false;\n" +
                 "        }\n" +
                 "\n" +
@@ -64,11 +68,7 @@ public class AgentHelper {
                 "    }\n" +
                 "\n" +
                 "    function isComputeStyle(node){\n" +
-                "        if(node === null){\n" +
-                "            return false;\n" +
-                "        }\n" +
-                "\n" +
-                "        if(node.tagName === null){\n" +
+                "        if(node.tagName === undefined){\n" +
                 "            return false;\n" +
                 "        }\n" +
                 "\n" +
@@ -78,10 +78,16 @@ public class AgentHelper {
                 "    function computeImageNode(node){\n" +
                 "        let img = document.createElement(\"img\");\n" +
                 "\n" +
-                "        img.alt = node.alt;\n" +
-                "        img.style.width = node.width;\n" +
-                "        img.style.height = node.height;\n" +
-                "        img.id = node.id;\n" +
+                "        if(node.alt != \"\"){\n" +
+                "            img.alt = node.alt;\n" +
+                "        }\n" +
+                "\n" +
+                "        if(node.id != \"\"){\n" +
+                "            img.id = node.id;\n" +
+                "        }\n" +
+                "\n" +
+                "        img.width = node.width;\n" +
+                "        img.height = node.height;\n" +
                 "        img.class = node.class;\n" +
                 "\n" +
                 "        return img;\n" +
@@ -98,6 +104,7 @@ public class AgentHelper {
                 "            const defaultStyle = getDefaultStyleByTagName(node.tagName);\n" +
                 "            const computedStyle = getComputedStyle(node);\n" +
                 "            updateStyle(clone, computedStyle, defaultStyle);\n" +
+                "            clone.style.font = node.style.font;\n" +
                 "        }\n" +
                 "\n" +
                 "        updateStyle(clone, node.style, {});\n" +
@@ -123,8 +130,7 @@ public class AgentHelper {
                 "                continue;\n" +
                 "            }\n" +
                 "\n" +
-                "            if (styles[cssPropName] !== \"\"\n" +
-                "                && styles[cssPropName] !== null) {\n" +
+                "            if (styles[cssPropName] !== null && styles[cssPropName] !== \"\") {\n" +
                 "                node.style[cssPropName] = styles[cssPropName];\n" +
                 "            }\n" +
                 "        }\n" +
