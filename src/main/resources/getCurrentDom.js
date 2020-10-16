@@ -92,10 +92,7 @@ const getCurrentDom = (function () {
             const defaultStyle = getDefaultStyleByTagName(node.tagName);
             const computedStyle = getComputedStyle(node);
             updateStyle(clone, computedStyle, defaultStyle);
-            clone.style.font = node.style.font;
         }
-
-        updateStyle(clone, node.style, {});
 
         for (let child of node.childNodes){
             if(!isIgnored(child)){
@@ -107,6 +104,8 @@ const getCurrentDom = (function () {
     }
 
     function updateStyle(node, styles, defaultStyle){
+        node.style = {};
+
         if(styles === undefined){
             return;
         }
