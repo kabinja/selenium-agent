@@ -3,6 +3,7 @@ package tech.ikora.seleniumagent;
 import net.bytebuddy.agent.builder.AgentBuilder;
 import net.bytebuddy.asm.Advice;
 import tech.ikora.seleniumagent.helpers.AgentHelper;
+import tech.ikora.seleniumagent.helpers.JsCode;
 
 import java.lang.instrument.Instrumentation;
 
@@ -16,6 +17,7 @@ public class SeleniumReporter {
         new AgentBuilder.Default()
                 .with(new AgentBuilder.InitializationStrategy.SelfInjection.Eager())
                 .type(named("org.openqa.selenium.remote.RemoteWebDriver"))
+                .transform(new ClassLoaderTransformer(JsCode.class))
                 .transform(new ClassLoaderTransformer(AgentHelper.class))
                 .transform((builder, type, classLoader, module) -> builder
                         .method(namedOneOf("findElement", "findElements")

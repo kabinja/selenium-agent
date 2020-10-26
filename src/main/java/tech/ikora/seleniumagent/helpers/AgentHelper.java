@@ -7,144 +7,6 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 
 public class AgentHelper {
-    private final static String jsCode;
-
-    static {
-        jsCode = "const getCurrentDom = (function () {\n" +
-                "    let defaultStylesByTagName = {};\n" +
-                "\n" +
-                "    const noStyleTags = {\"BASE\":true,\"HEAD\":true,\"HTML\":true,\"META\":true,\"NOFRAME\":true,\"NOSCRIPT\":true,\"PARAM\":true,\"SCRIPT\":true,\"STYLE\":true,\"TITLE\":true};\n" +
-                "    const ignoreTags = new Set(['SCRIPT', 'STYLE', 'LINK']);\n" +
-                "    const tagNames = [\"A\",\"ABBR\",\"ADDRESS\",\"AREA\",\"ARTICLE\",\"ASIDE\",\"AUDIO\",\"B\",\"BASE\",\"BDI\",\"BDO\",\"BLOCKQUOTE\",\"BODY\",\"BR\",\"BUTTON\",\"CANVAS\",\"CAPTION\",\"CENTER\",\"CITE\",\"CODE\",\"COL\",\"COLGROUP\",\"COMMAND\",\"DATALIST\",\"DD\",\"DEL\",\"DETAILS\",\"DFN\",\"DIV\",\"DL\",\"DT\",\"EM\",\"EMBED\",\"FIELDSET\",\"FIGCAPTION\",\"FIGURE\",\"FONT\",\"FOOTER\",\"FORM\",\"H1\",\"H2\",\"H3\",\"H4\",\"H5\",\"H6\",\"HEAD\",\"HEADER\",\"HGROUP\",\"HR\",\"HTML\",\"I\",\"IFRAME\",\"IMG\",\"INPUT\",\"INS\",\"KBD\",\"KEYGEN\",\"LABEL\",\"LEGEND\",\"LI\",\"LINK\",\"MAP\",\"MARK\",\"MATH\",\"MENU\",\"META\",\"METER\",\"NAV\",\"NOBR\",\"NOSCRIPT\",\"OBJECT\",\"OL\",\"OPTION\",\"OPTGROUP\",\"OUTPUT\",\"P\",\"PARAM\",\"PRE\",\"PROGRESS\",\"Q\",\"RP\",\"RT\",\"RUBY\",\"S\",\"SAMP\",\"SCRIPT\",\"SECTION\",\"SELECT\",\"SMALL\",\"SOURCE\",\"SPAN\",\"STRONG\",\"STYLE\",\"SUB\",\"SUMMARY\",\"SUP\",\"SVG\",\"TABLE\",\"TBODY\",\"TD\",\"TEXTAREA\",\"TFOOT\",\"TH\",\"THEAD\",\"TIME\",\"TITLE\",\"TR\",\"TRACK\",\"U\",\"UL\",\"VAR\",\"VIDEO\",\"WBR\"];\n" +
-                "\n" +
-                "    for (let i = 0; i < tagNames.length; i++) {\n" +
-                "        if(!noStyleTags[tagNames[i]]) {\n" +
-                "            defaultStylesByTagName[tagNames[i]] = computeDefaultStyleByTagName(tagNames[i]);\n" +
-                "        }\n" +
-                "    }\n" +
-                "\n" +
-                "    function computeDefaultStyleByTagName(tagName) {\n" +
-                "        let defaultStyle = {};\n" +
-                "\n" +
-                "        const element = document.body.appendChild(document.createElement(tagName));\n" +
-                "        const computedStyle = getComputedStyle(element);\n" +
-                "\n" +
-                "        for (let i = 0; i < computedStyle.length; i++) {\n" +
-                "            defaultStyle[computedStyle[i]] = computedStyle[computedStyle[i]];\n" +
-                "        }\n" +
-                "\n" +
-                "        document.body.removeChild(element);\n" +
-                "        return defaultStyle;\n" +
-                "    }\n" +
-                "\n" +
-                "    function hasTagName(node, tagName){\n" +
-                "        if(node.tagName === undefined){\n" +
-                "            return false;\n" +
-                "        }\n" +
-                "\n" +
-                "        return node.tagName.toUpperCase() === tagName.toUpperCase();\n" +
-                "    }\n" +
-                "\n" +
-                "    function getDefaultStyleByTagName(tagName) {\n" +
-                "        tagName = tagName.toUpperCase();\n" +
-                "\n" +
-                "        if (!defaultStylesByTagName[tagName]) {\n" +
-                "            defaultStylesByTagName[tagName] = computeDefaultStyleByTagName(tagName);\n" +
-                "        }\n" +
-                "\n" +
-                "        return defaultStylesByTagName[tagName];\n" +
-                "    }\n" +
-                "\n" +
-                "    function isIgnored(node){\n" +
-                "        if(node === undefined){\n" +
-                "            return true;\n" +
-                "        }\n" +
-                "\n" +
-                "        if(node.tagName === undefined){\n" +
-                "            return false;\n" +
-                "        }\n" +
-                "\n" +
-                "        return ignoreTags.has(node.tagName.toUpperCase());\n" +
-                "    }\n" +
-                "\n" +
-                "    function isComputeStyle(node){\n" +
-                "        if(node.tagName === undefined){\n" +
-                "            return false;\n" +
-                "        }\n" +
-                "\n" +
-                "        return node instanceof Element && !noStyleTags[node.tagName.toUpperCase()];\n" +
-                "    }\n" +
-                "\n" +
-                "    function computeImageNode(node){\n" +
-                "        let img = document.createElement(\"img\");\n" +
-                "\n" +
-                "        if(node.alt != \"\"){\n" +
-                "            img.alt = node.alt;\n" +
-                "        }\n" +
-                "\n" +
-                "        if(node.id != \"\"){\n" +
-                "            img.id = node.id;\n" +
-                "        }\n" +
-                "\n" +
-                "        img.width = node.width;\n" +
-                "        img.height = node.height;\n" +
-                "        img.class = node.class;\n" +
-                "\n" +
-                "        return img;\n" +
-                "    }\n" +
-                "\n" +
-                "    function deepCloneWithStyles (node) {\n" +
-                "        if(hasTagName(node, \"img\")){\n" +
-                "            return computeImageNode(node);\n" +
-                "        }\n" +
-                "\n" +
-                "        const clone = node.cloneNode(false);\n" +
-                "\n" +
-                "        if (isComputeStyle(node)) {\n" +
-                "            const defaultStyle = getDefaultStyleByTagName(node.tagName);\n" +
-                "            const computedStyle = getComputedStyle(node);\n" +
-                "            updateStyle(clone, computedStyle, defaultStyle);\n" +
-                "            clone.style.font = node.style.font;\n" +
-                "        }\n" +
-                "\n" +
-                "        updateStyle(clone, node.style, {});\n" +
-                "\n" +
-                "        for (let child of node.childNodes){\n" +
-                "            if(!isIgnored(child)){\n" +
-                "                clone.appendChild(deepCloneWithStyles(child));\n" +
-                "            }\n" +
-                "        }\n" +
-                "\n" +
-                "        return clone;\n" +
-                "    }\n" +
-                "\n" +
-                "    function updateStyle(node, styles, defaultStyle){\n" +
-                "        if(styles === undefined){\n" +
-                "            return;\n" +
-                "        }\n" +
-                "\n" +
-                "        for (let i = 0, l = styles.length; i < l; ++i) {\n" +
-                "            const cssPropName = styles[i];\n" +
-                "\n" +
-                "            if(defaultStyle !== undefined && styles[cssPropName] === defaultStyle[cssPropName]){\n" +
-                "                continue;\n" +
-                "            }\n" +
-                "\n" +
-                "            if (styles[cssPropName] !== null && styles[cssPropName] !== \"\") {\n" +
-                "                node.style[cssPropName] = styles[cssPropName];\n" +
-                "            }\n" +
-                "        }\n" +
-                "    }\n" +
-                "\n" +
-                "    return function computeDom() {\n" +
-                "        let node = document.documentElement;\n" +
-                "        return deepCloneWithStyles(node).outerHTML;\n" +
-                "    }\n" +
-                "})();\n" +
-                "\n" +
-                "return getCurrentDom();";
-    }
-
     public static String getCurrentUrl(Object driver){
         String url;
 
@@ -152,7 +14,7 @@ public class AgentHelper {
             Method getCurrentDom = driver.getClass().getMethod("getCurrentUrl");
             url = (String)getCurrentDom.invoke(driver);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            url = "Failed to load current url";
+            url =  String.format("Failed to load current url: %s", e.getMessage());
         }
 
         return url;
@@ -162,10 +24,10 @@ public class AgentHelper {
         String dom;
 
         try {
-            Method getCurrentDom = driver.getClass().getMethod("executeScript", String.class, Object[].class);
-            dom = (String)getCurrentDom.invoke(driver, jsCode, new Object[0]);
+            Method getCurrentDom = driver.getClass().getMethod("executeAsyncScript", String.class, Object[].class);
+            dom = (String)getCurrentDom.invoke(driver, JsCode.getCurrentDomWithStyles, new Object[0]);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            dom = "Failed to load dom";
+            dom = String.format("Failed to load dom: %s", e.getMessage());
         }
 
         return dom;
