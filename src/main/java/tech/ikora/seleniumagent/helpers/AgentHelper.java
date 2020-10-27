@@ -62,7 +62,7 @@ public class AgentHelper {
     public static String getStackTrace(){
         StringBuilder stringBuilder = new StringBuilder();
         for(StackTraceElement st: Thread.currentThread().getStackTrace()){
-            final String name = String.format("%s:%s", st.getClassName(), st.getMethodName());
+            final String name = st.getClassName();
 
             if(name.startsWith("org.codehaus.plexus.")
                     || name.startsWith("org.apache.maven.")
@@ -74,7 +74,11 @@ public class AgentHelper {
                 continue;
             }
 
-            stringBuilder.append(name);
+            stringBuilder.append(st.getClassName());
+            stringBuilder.append(":");
+            stringBuilder.append(st.getMethodName());
+            stringBuilder.append(":");
+            stringBuilder.append(st.getLineNumber());
             stringBuilder.append(";");
         }
 
