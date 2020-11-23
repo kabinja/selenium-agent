@@ -62,18 +62,6 @@ public class AgentHelper {
     public static String getStackTrace(){
         StringBuilder stringBuilder = new StringBuilder();
         for(StackTraceElement st: Thread.currentThread().getStackTrace()){
-            final String name = st.getClassName();
-
-            if(name.startsWith("org.codehaus.plexus.")
-                    || name.startsWith("org.apache.maven.")
-                    || name.startsWith("org.testng.")
-                    || name.startsWith("org.junit.")
-                    || name.startsWith("jdk.internal.reflect.")
-                    || name.startsWith("java.lang.Thread")
-                    || name.startsWith("java.lang.reflect.Method")){
-                continue;
-            }
-
             stringBuilder.append(st.getClassName());
             stringBuilder.append(":");
             stringBuilder.append(st.getMethodName());
