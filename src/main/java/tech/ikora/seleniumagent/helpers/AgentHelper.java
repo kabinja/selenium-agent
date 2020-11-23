@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import java.util.StringJoiner;
 
 public class AgentHelper {
     public static String getCurrentUrl(Object driver){
@@ -60,14 +61,18 @@ public class AgentHelper {
     }
 
     public static String getStackTrace(){
-        StringBuilder stringBuilder = new StringBuilder();
+        final StringBuilder stringBuilder = new StringBuilder();
+
+        String prefix = "";
         for(StackTraceElement st: Thread.currentThread().getStackTrace()){
+            stringBuilder.append(prefix);
             stringBuilder.append(st.getClassName());
             stringBuilder.append(":");
             stringBuilder.append(st.getMethodName());
             stringBuilder.append(":");
             stringBuilder.append(st.getLineNumber());
-            stringBuilder.append(";");
+
+            prefix = ";";
         }
 
         return stringBuilder.toString();
